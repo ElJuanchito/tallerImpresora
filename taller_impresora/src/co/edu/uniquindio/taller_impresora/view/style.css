@@ -1,0 +1,12 @@
+.labels {
+	-fx-alignment: center;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-font-size: 1em;
+	-fx-background-color: #6C3483;
+	-fx-padding: 0.5em;
+}
+
+.labels:hover {
+	-fx-background-color: #4A235A;
+}
