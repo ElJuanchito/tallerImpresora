@@ -1,37 +1,44 @@
 package co.edu.uniquindio.taller_impresora.view;
 
+import java.io.IOException;
+
 import co.edu.uniquindio.taller_impresora.controllers.DataBase;
-import javafx.application.Application;
-import javafx.scene.Scene;
+import co.edu.uniquindio.taller_impresora.exceptions.ExceptionImpresora;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class PrintDocument extends Application {
+public class PrintDocument extends BorderPane {
 	private DataBase db;
+	private BorderPane root;
 
-	public PrintDocument() {
+	public PrintDocument(BorderPane root) {
+		this.root = root;
 		this.db = new DataBase();
+		init();
+
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	private void init() {
 		Label label = new Label();
-		label.setText(db.getCentro().imprimirDocumento());
-		label.setStyle("-fx-font-weight: bold;" + "-fx-background-color: aqua;");
-		db.escribirObjeto();
+		try {
+			label.setText(db.getCentro().imprimirDocumento());
+		} catch (ClassNotFoundException | ExceptionImpresora | IOException e1) {
+			e1.printStackTrace();
+		}
+		label.setStyle("-fx-font-weight: bold;" + "-fx-font-size: 1em;" + "-fx-padding: 2em 1em 0 1em");
+		try {
+			db.escribirObjeto();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-		VBox root = new VBox();
-		root.getChildren().add(label);
+		VBox box = new VBox();
+		box.setAlignment(Pos.TOP_CENTER);
+		box.getChildren().addAll(label);
 
-		Scene scene = new Scene(root, 500, 600);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Documento");
-		primaryStage.show();
+		root.setCenter(box);
 
-	}
-
-	public void iniciar(Stage primaryStage) throws Exception {
-		this.start(primaryStage);
 	}
 }

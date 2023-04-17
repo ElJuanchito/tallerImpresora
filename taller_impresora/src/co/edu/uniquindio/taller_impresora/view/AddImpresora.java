@@ -1,110 +1,131 @@
 package co.edu.uniquindio.taller_impresora.view;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import co.edu.uniquindio.taller_impresora.controllers.DataBase;
 import co.edu.uniquindio.taller_impresora.model.EstadoImpresora;
 import co.edu.uniquindio.taller_impresora.model.Impresora;
 import co.edu.uniquindio.taller_impresora.model.TipoImpresa;
-import javafx.application.Application;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class AddImpresora extends Application {
+public class AddImpresora extends BorderPane {
 	private DataBase db;
+	private Impresora impresoraConectada;
+	private BorderPane root;
 
-	public AddImpresora() {
+	public AddImpresora(BorderPane root) {
+		this.root = root;
 		this.db = new DataBase();
+		init();
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	private void init() {
 		Label addDoc = new Label();
-		addDoc.setText("Llena los datos de la Impresora");
-		// EstadoImpresora estado, String nombre, String marca, TipoImpresa tipo
+		addDoc.setText("Datos de la Impresora");
+		addDoc.setStyle("-fx-font-size: 3em;" + "-fx-alignment: center;" + "-fx-padding: 2em 0;");
+		addDoc.setMaxWidth(Double.MAX_VALUE);
 
 		Label nombre = new Label("Nombre:");
+		nombre.getStyleClass().add("labels");
 
 		TextField cajaNombre = new TextField();
 		cajaNombre.setPromptText("Impresora#1");
+		cajaNombre.getStyleClass().add("cajas");
+
+		HBox pNombre = new HBox(20);
+		pNombre.getChildren().addAll(nombre, cajaNombre);
+		pNombre.getStyleClass().add("cajasImpresora");
 
 		Label estado = new Label("Estado de la impresora: ");
+		estado.getStyleClass().add("labels");
 
 		ComboBox<EstadoImpresora> cajaEstado = new ComboBox<>();
 		cajaEstado.setPromptText("Seleccionar");
+		cajaEstado.getStyleClass().add("btn");
 		cajaEstado.getItems().add(EstadoImpresora.ENCENDIDO);
 		cajaEstado.getItems().add(EstadoImpresora.APAGADO);
 
+		HBox pEstado = new HBox(20);
+		pEstado.getChildren().addAll(estado, cajaEstado);
+		pEstado.getStyleClass().add("cajasImpresora");
+
 		Label marca = new Label("Marca:");
+		marca.getStyleClass().add("labels");
 
 		TextField cajaMarca = new TextField();
 		cajaMarca.setPromptText("EPSON");
+		cajaMarca.getStyleClass().add("cajas");
+
+		HBox pMarca = new HBox(20);
+		pMarca.getChildren().addAll(marca, cajaMarca);
+		pMarca.getStyleClass().add("cajasImpresora");
 
 		Label tipo = new Label("Tipo de la impresora: ");
+		tipo.getStyleClass().add("labels");
 
 		ComboBox<TipoImpresa> cajaTipo = new ComboBox<>();
 		cajaTipo.setPromptText("Seleccionar");
+		cajaTipo.getStyleClass().add("btn");
+		cajaTipo.setStyle("-fx-prompt-text-fill: white;");
 		cajaTipo.getItems().add(TipoImpresa.CARTUCHO);
 		cajaTipo.getItems().add(TipoImpresa.LASER);
 
-		Button agregar = new Button("Agregar");
-		agregar.setOnAction(event -> {
-			try {
-				db.getCentro().getListaImpresoras().add(new Impresora(cajaEstado.getValue(), cajaNombre.getText().trim(),
-						cajaMarca.getText().trim(), cajaTipo.getValue()));
-			} catch (ClassNotFoundException | IOException e1) {
-				// TOD O Auto-generated catch block
-				e1.printStackTrace();
-			}
-			Alert alerta = new Alert(AlertType.CONFIRMATION, "Desea establecerla como impresora conectada ?");
-			alerta.setHeaderText("La Impresora se agrego con exito.");
-			alerta.getButtonTypes().set(0, new ButtonType("Si"));
-			Optional<ButtonType> result = alerta.showAndWait();
+		HBox pTipo = new HBox(20);
+		pTipo.getChildren().addAll(tipo, cajaTipo);
+		pTipo.getStyleClass().add("cajasImpresora");
 
-			if (result.get() == new ButtonType("Si")) {
-				try {
-					db.getCentro()
-							.setImpresoraConectada(db.getCentro().getListaImpresoras().stream()
-									.filter(impresora -> impresora.getNombre().equals(cajaNombre.getText().trim()))
-									.findFirst().get());
-				} catch (ClassNotFoundException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				alerta.close();
-			} try {
+		Button setImpresora = new Button("Establecer Impresora");
+		setImpresora.setVisible(false);
+		setImpresora.setOnAction(value -> {
+			try {
+				db.getCentro().setImpresoraConectada(impresoraConectada);
 				db.escribirObjeto();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
+			} catch (ClassNotFoundException | IOException e) {
 				e.printStackTrace();
 			}
 		});
 
-		VBox root = new VBox();
-		root.getChildren().addAll(nombre, cajaNombre, estado, cajaEstado, marca, cajaMarca, tipo, cajaTipo, agregar);
+		Button agregar = new Button("Agregar");
+		agregar.getStyleClass().add("btn");
+		agregar.setStyle("-fx-padding: 1em;" + "-fx-font-family: 'Nunito', sans-serif;");
+		agregar.setOnAction(event -> {
+			try {
+				System.out.println(db.getCentro());
+				Impresora impresora = new Impresora(cajaEstado.getValue(), cajaNombre.getText().trim(),
+						cajaMarca.getText().trim(), cajaTipo.getValue());
+				db.getCentro().getListaImpresoras().add(impresora);
+				db.escribirObjeto();
+				impresoraConectada = impresora;
+				System.out.println(db.getCentro());
+			} catch (ClassNotFoundException | IOException e1) {
+				e1.printStackTrace();
+			}
+			Alert alerta = new Alert(AlertType.CONFIRMATION);
+			alerta.setHeaderText("La Impresora se agrego con exito.");
+			alerta.show();
 
-		Scene scene = new Scene(root, 500, 600);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Cola de Impresion");
-		primaryStage.show();
-	}
+			try {
+				db.escribirObjeto();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 
-	public void iniciar(Stage primaryStage) throws Exception {
-		this.start(primaryStage);
-	}
+		HBox cajaBoton = new HBox(agregar);
+		cajaBoton.setAlignment(Pos.CENTER);
 
-	public static void main(String[] args) {
-		launch(args);
+		VBox box = new VBox(20);
+		box.getChildren().addAll(addDoc, pNombre, pMarca, pEstado, pTipo, setImpresora, cajaBoton);
+		root.setCenter(box);
 	}
 
 }

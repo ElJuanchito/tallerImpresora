@@ -1,8 +1,8 @@
 package co.edu.uniquindio.taller_impresora.view;
 
+import java.io.IOException;
 import co.edu.uniquindio.taller_impresora.controllers.DataBase;
-import javafx.application.Application;
-import javafx.scene.Scene;
+import co.edu.uniquindio.taller_impresora.exceptions.ExceptionImpresora;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
@@ -10,83 +10,93 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MainMenu extends Application {
+public class MainMenu extends BorderPane {
 
 	private DataBase db;
+	private Stage stage;
 
-	public MainMenu() {
+	public MainMenu(Stage stage) {
+		this.stage = stage;
 		this.db = new DataBase();
+		init();
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void init() {
 
-		Label addDoc = new Label("Anadir documento");
-		addDoc.getStyleClass().add("labels");
+		Label addDoc = new Label("Añadir documento");
+		addDoc.getStyleClass().add("opciones");
 		addDoc.setMaxWidth(Double.MAX_VALUE);
-		addDoc.setOnMouseClicked(value -> {
-			AddDocument anadir = new AddDocument();
-			try {
-				anadir.iniciar(primaryStage);
-			} catch (Exception e) {
-				Alert alerta = new Alert(AlertType.ERROR);
-				alerta.setHeaderText("Error al mostrar las ventana");
-				e.printStackTrace();
-			}
-		});
+		addDoc.setOnMouseClicked(value -> new AddDocument(this, stage));
 
 		Label printDoc = new Label("Imprimir documento");
-		printDoc.getStyleClass().add("labels");
+		printDoc.getStyleClass().add("opciones");
 		printDoc.setMaxWidth(Double.MAX_VALUE);
 		printDoc.setOnMouseClicked(value -> {
-			PrintDocument imprimir = new PrintDocument();
 			try {
+				if (db.getCentro().getImpresoraConectada() == null) {
+					new Alert(AlertType.ERROR, "No hay impresora conectada").show();
+					return;
+				}
+				if (db.getCentro().getListaImpresion().isEmpty()) {
+					new Alert(AlertType.ERROR, "No existe ningun documento en la cola").show();
+					return;
+				}
+				if (db.getCentro().off()) {
+					new Alert(AlertType.ERROR, "La impresora no esta encendida").show();
+					return;
+				}
 				if (db.getCentro().imprimirDocumento() == null) {
-					Alert alerta = new Alert(AlertType.WARNING);
-					alerta.setHeaderText("No existe ningun documento en cola");
-					alerta.show();
-				} else imprimir.iniciar(primaryStage);
-			} catch (Exception e) {
-				Alert alerta = new Alert(AlertType.ERROR);
-				alerta.setHeaderText("Error al mostrar las ventana");
+					new Alert(AlertType.ERROR, "Error con el documento").show();
+					return;
+				} else
+					// new PrintDocument(this);
+					new PantallaCarga(this);
+
+			} catch (ClassNotFoundException | IOException | ExceptionImpresora e) {
 				e.printStackTrace();
 			}
 
 		});
 
 		Label verCola = new Label("Ver cola");
-		verCola.getStyleClass().add("labels");
+		verCola.getStyleClass().add("opciones");
 		verCola.setMaxWidth(Double.MAX_VALUE);
 		verCola.setOnMouseClicked(value -> {
-			VerCola ver = new VerCola();
-			try {
-				ver.iniciar(primaryStage);
-			} catch (Exception e) {
-				Alert alerta = new Alert(AlertType.ERROR);
-				alerta.setHeaderText("Error al mostrar las ventana");
-				e.printStackTrace();
-			}
+
+			new VerCola(this);
 		});
 
+		Label addImpresora = new Label("Añadir impresora");
+		addImpresora.getStyleClass().add("opciones");
+		addImpresora.setMaxWidth(Double.MAX_VALUE);
+		addImpresora.setOnMouseClicked(value -> {
+			new AddImpresora(this);
+		});
+
+		Label setIm = new Label("Elegir impresora");
+		setIm.getStyleClass().add("opciones");
+		setIm.setMaxWidth(Double.MAX_VALUE);
+		setIm.setOnMouseClicked(value -> {
+			new SelectImpresora(this);
+		});
+
+		Label coomingsoon1 = new Label("Encender Impresora");
+		coomingsoon1.getStyleClass().add("opciones");
+		coomingsoon1.setMaxWidth(Double.MAX_VALUE);
+		coomingsoon1.setOnMouseClicked(value -> {
+			new EncenderImpresora(this);
+		});
+
+		Label coomingsoon2 = new Label("Comming Soon");
+		coomingsoon2.getStyleClass().add("opciones");
+		coomingsoon2.setMaxWidth(Double.MAX_VALUE);
+		coomingsoon2.setOnMouseClicked(value -> new Alert(AlertType.INFORMATION, "Pronto nueva funcionalidad").show());
+
 		VBox pnDer = new VBox();
-		pnDer.getChildren().addAll(addDoc, printDoc, verCola);
+		pnDer.getChildren().addAll(addDoc, printDoc, verCola, addImpresora, setIm, coomingsoon1, coomingsoon2);
+		this.setRight(pnDer);
+		this.setTop(new Barra(stage));
+		this.setStyle("-fx-font-family: 'Nunito', sans-serif;");
 
-		BorderPane root = new BorderPane();
-		root.setRight(pnDer);
-
-		Scene scene = new Scene(root, 500, 600);
-		scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Menu");
-		primaryStage.show();
-
-	}
-
-	public void lanzar() {
-		launch();
-	}
-
-	public void iniciar(Stage primaryStage) throws Exception {
-		start(primaryStage);
 	}
 }

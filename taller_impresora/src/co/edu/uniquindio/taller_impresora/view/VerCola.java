@@ -1,35 +1,41 @@
 package co.edu.uniquindio.taller_impresora.view;
 
+import java.io.IOException;
+
 import co.edu.uniquindio.taller_impresora.controllers.DataBase;
-import javafx.application.Application;
-import javafx.scene.Scene;
+import co.edu.uniquindio.taller_impresora.model.Documento;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
-public class VerCola extends Application {
+public class VerCola extends BorderPane {
 	private DataBase db;
+	private BorderPane root;
 
-	public VerCola() {
-		this.db =  new DataBase();
+	public VerCola(BorderPane root) {
+		this.root = root;
+		this.db = new DataBase();
+		init();
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	private void init() {
 
-		Label cola = new Label();
-		cola.setText(db.getCentro().getListaImpresion().toString());
+		VBox cola = new VBox(20);
 
-		VBox root = new VBox();
-		root.getChildren().add(cola);
+		try {
+			for (Documento doc : db.getCentro().getListaImpresion()) {
+				Label lblCola = new Label(doc.toString());
+				lblCola.setMaxWidth(Double.MAX_VALUE);
+				lblCola.getStyleClass().add("lblCola");
+				cola.getChildren().add(lblCola);
+			}
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
 
-		Scene scene = new Scene(root, 500, 600);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Cola de Impresion");
-		primaryStage.show();
-	}
-
-	public void iniciar(Stage primaryStage) throws Exception {
-		this.start(primaryStage);
+		VBox box = new VBox();
+		box.getChildren().addAll(cola);
+		root.setCenter(box);
+		root.setCenter(box);
 	}
 }

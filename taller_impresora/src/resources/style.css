@@ -1,0 +1,81 @@
+
+.tools{
+	-fx-font-size: 1.8em;
+	-fx-padding: 0.25em;
+}
+
+.opciones {
+	-fx-alignment: center;
+	-fx-text-fill: white;
+	-fx-font-weight: bold;
+	-fx-font-size: 2.0em;
+	-fx-background-color: #6C3483;
+	-fx-padding: 2.0em;
+	-fx-border-color: black;
+	-fx-border-width: 0 0.0 0.01em 0;
+}
+
+.opciones:hover {
+	-fx-background-color: #4A235A;
+}
+
+.panelsDoc {
+	-fx-padding: 20.0 0 0 20.0;
+}
+
+.labels{
+	-fx-font-size: 1.5em;
+}
+
+.addDocLabels{
+	-fx-font-size: 1.5em;
+}
+
+.cajas{
+	-fx-background-color: -fx-control-inner-background;
+	-fx-pref-width: 18em;
+}
+
+.btn{
+	-fx-border-color: #4A235A;
+	-fx-background-color: #6C3483;
+	-fx-text-fill: white;
+	-fx-border-radius: 0.5em;
+	-fx-background-radius: 0.5em;
+}
+#botonAnadir:hover{
+	-fx-background-color: #4A235A;
+}
+
+.estadoImpresora{
+	-fx-padding: 1.5em;
+	-fx-font-size: 2em;
+	-fx-text-fill: white;
+	-fx-border-color: black;
+	-fx-background-color: gray;
+}
+
+.estadoImpresora:hover{
+	-fx-background-color:black;
+}
+.cajasImpresora{
+	-fx-padding: 0 0 0 2em;
+}
+
+#selectImp {
+	-fx-font-size: 1.5em;
+}
+#selectImp:hover{
+	-fx-background-color: #6C3483;
+}
+#selectImp:pressed{
+	-fx-background-color:black;
+}
+
+.lblCola{
+	-fx-border-color: #4A235A;
+	-fx-background-color: #AB53CF;
+	-fx-text-fill: white;
+	-fx-padding: 1em;
+	-fx-font-size: 1em;
+}

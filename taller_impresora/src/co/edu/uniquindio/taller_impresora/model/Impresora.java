@@ -1,13 +1,18 @@
 package co.edu.uniquindio.taller_impresora.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.Scanner;
 
 import co.edu.uniquindio.taller_impresora.exceptions.ExceptionImpresora;
 
-public class Impresora implements Serializable{
+public class Impresora implements Serializable {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private EstadoImpresora estado;
 	private String nombre;
 	private String marca;
@@ -16,7 +21,8 @@ public class Impresora implements Serializable{
 	private Documento documentoImprimir;
 
 	/**
-	 * Constructor de la clase Impresora
+	 * Constructor de la clase <b>Impresora</b> que permite inicializar los
+	 * atributos
 	 *
 	 * @param estado
 	 * @param nombre
@@ -29,49 +35,103 @@ public class Impresora implements Serializable{
 		this.marca = marca;
 		this.tipo = tipo;
 		this.porcentajeTinta = 100;
-		this.documentoImprimir = new Documento("vacio", 1, "ruta no existente");
 	}
 
+	/**
+	 * Obtiene el estado de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public EstadoImpresora getEstado() {
 		return estado;
 	}
 
+	/**
+	 * Establece el estado de la <b>Impresora</b>
+	 *
+	 * @param estado
+	 */
 	public void setEstado(EstadoImpresora estado) {
 		this.estado = estado;
 	}
 
+	/**
+	 * Obtiene el nombre de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public String getNombre() {
 		return nombre;
 	}
 
+	/**
+	 * Establece el nombre de la <b>Impresora</b>
+	 *
+	 * @param nombre
+	 */
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
 
+	/**
+	 * Obtiene la marca de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public String getMarca() {
 		return marca;
 	}
 
+	/**
+	 * Establece la marca de la <b>Impresora</b>
+	 *
+	 * @param marca
+	 */
 	public void setMarca(String marca) {
 		this.marca = marca;
 	}
 
+	/**
+	 * obtiene el porcentaje de tinta de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public Integer getPorcentajeTinta() {
 		return porcentajeTinta;
 	}
 
+	/**
+	 * Establece el porcentaje de tinta de la <b>Impresora</b>
+	 *
+	 * @param porcentajeTinta
+	 */
 	public void setPorcentajeTinta(Integer porcentajeTinta) {
 		this.porcentajeTinta = porcentajeTinta;
 	}
 
+	/**
+	 * Obtiene el <b>documento</b> a imprimir de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public Documento getDocumentoImprimir() {
 		return documentoImprimir;
 	}
 
+	/**
+	 * Establece el <b>documento</b> a imprimir de la <b>Impresora</b>
+	 *
+	 * @param documentoImprimir
+	 */
 	public void setDocumentoImprimir(Documento documentoImprimir) {
 		this.documentoImprimir = documentoImprimir;
 	}
 
+	/**
+	 * Obtiene el tipo de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
 	public TipoImpresa getTipo() {
 		return tipo;
 	}
@@ -131,21 +191,45 @@ public class Impresora implements Serializable{
 				+ ", porcentajeTinta=" + porcentajeTinta + ", documentoImprimir=" + documentoImprimir + "]";
 	}
 
-	private void verificarTinta() throws ExceptionImpresora{
-		if(porcentajeTinta == 0) throw new ExceptionImpresora("La impresora ya no tiene tinta");
+	/**
+	 * Verifica que la <b>Impresora</b> todavia tenga tinta
+	 *
+	 * @throws ExceptionImpresora
+	 */
+	private void verificarTinta() throws ExceptionImpresora {
+		if (porcentajeTinta == 0)
+			throw new ExceptionImpresora("La impresora ya no tiene tinta");
 	}
 
+	/**
+	 * Transforma un archivo.txt a una cadena de texto
+	 *
+	 * @return
+	 * @throws FileNotFoundException
+	 */
 	private String getTexto() throws FileNotFoundException {
+		if (documentoImprimir.getPath() == null)
+			return null;
 		File file = new File(documentoImprimir.getPath());
-		Scanner scan = new Scanner(file);
+		Scanner scan = new Scanner(new FileInputStream(file));
 		String cadena = "";
 
 		while (scan.hasNextLine()) {
+			cadena += "\n";
 			cadena += scan.nextLine();
-		} scan.close();
+		}
+		scan.close();
 		return cadena;
 	}
 
+	/**
+	 * Imprime el documento de la <b>Impresora</b>. Verifica que la impresora
+	 * tenga tinta y le resta al porcentaje segun su tipo
+	 *
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws ExceptionImpresora
+	 */
 	public String imprimir() throws FileNotFoundException, ExceptionImpresora {
 		verificarTinta();
 		if (tipo == TipoImpresa.CARTUCHO)
@@ -154,6 +238,29 @@ public class Impresora implements Serializable{
 			porcentajeTinta -= 2;
 
 		return getTexto();
+	}
+
+	/**
+	 * Enciende la <b>Impresora</b> cambiandole el estado
+	 */
+	public void encender() {
+		estado = EstadoImpresora.ENCENDIDO;
+	}
+
+	/**
+	 * Apaga la <b>Impresora</b> cambiandole el estado
+	 */
+	public void apagar() {
+		estado = EstadoImpresora.APAGADO;
+	}
+
+	/**
+	 * Obtiene los datos de la <b>Impresora</b>
+	 *
+	 * @return
+	 */
+	public String getDatos() {
+		return "Nombre: " + nombre + " ■ Marca: " + marca + " ■ Estado: " + estado;
 	}
 
 }
